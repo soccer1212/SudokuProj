@@ -8,6 +8,18 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
+import javax.swing.*;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,31 +27,22 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 
-/* Class representing the GUI
- * 
- * Author: Matt Tacchino
- * 
- * Creates the interactive GUI to support the sudoku solver using GridBagLayout.
- * Frame is minimum 300x300px resizable
- * 
- * There are 5 main parts:
- * 		Title
- * 		Grid: 9x9 grid of text fields, 81 total
- * 		Generate Example button: creates an example puzzle using the ExamplePuzzles class
- * 		Clear Table button: set sudokutable to a blank table and clear text fields
- * 		Solve button: Solves the sudoku puzzle. See SudokuTable.java for algorithm
- * 
- */
 public class GUI {
 
 	private SudokuTable sudokuTable = new SudokuTable();
-	
 	private JFrame frame = new JFrame("Sudoku Solver");
 	private JTextField textField[][] = new JTextField[9][9];
 	private GridPanel gridPanel = new GridPanel(new GridLayout(9,9,1,1));
+	private static final String stop = "Stop";
+    private static final String start = "Start";
+    private final ClockListener clock = new ClockListener();
+    private final Timer timer = new Timer(53, (ActionListener) clock);
+    private final JTextField tf = new JTextField(9);
+    private final SimpleDateFormat date = new SimpleDateFormat("mm.ss.SSS");
+    private long startTime;
 	
-	// constructor for blank SudokuTable. adds empty text fields to gridpanel
 	GUI(){
 		for (int y = 0; y < 9; y++){
 			for (int x = 0; x < 9; x++){
@@ -72,13 +75,13 @@ public class GUI {
 		for (int y = 0; y < 9; y++){
 			for (int x = 0; x < 9; x++){
 				if (!textField[x][y].getText().equals("")){
-					sudokuTable.getDigit(x,y).setAnswer(Integer.parseInt(textField[x][y].getText())); //if a number is in the textfield, put it in the sudoku table
-					sudokuTable.getDigit(x,y).setSafe(true); // set starting digits to true
-					textField[x][y].setForeground(Color.RED); // colour starting digits red
+					sudokuTable.getDigit(x,y).setAnswer(Integer.parseInt(textField[x][y].getText()));
+					sudokuTable.getDigit(x,y).setSafe(true);
+					textField[x][y].setForeground(Color.RED);
 				}
 				else {
-					sudokuTable.getDigit(x,y).setAnswer(0); //clear any blank table digits by setting them to 0
-					textField[x][y].setForeground(Color.BLACK); //colour blanks to black
+					sudokuTable.getDigit(x,y).setAnswer(0);
+					textField[x][y].setForeground(Color.BLACK);
 				}
 			}
 		}
@@ -103,9 +106,8 @@ public class GUI {
 	}
 	
 	public void createGUI(){
-		//create main panel and add a top title and bottom button. Also
-		//add the grid panel to this panel in the centre
-		JPanel mainPanel = new JPanel(new GridBagLayout()); //create main panel
+		
+		JPanel mainPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		
 		gridBagConstraints.weighty = 1;
@@ -141,7 +143,8 @@ public class GUI {
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
 		mainPanel.add(topCenterLabel, gridBagConstraints);
 		
-		JLabel topRightLabel = new JLabel("Timer", JLabel.CENTER);
+		JPanel topRightPanel = new JPanel(new FlowLayout(2));
+		JLabel topRightLabel = new JLabel("Timer:", JLabel.RIGHT);
 		gridBagConstraints.gridx = 1;
 		gridBagConstraints.gridy = 0;
 		gridBagConstraints.gridwidth = 1;
@@ -151,8 +154,10 @@ public class GUI {
 		topRightLabel.setBackground(Color.RED);
 		topRightLabel.setForeground(Color.WHITE);
 		topRightLabel.setFont(new Font("Helvetica", Font.PLAIN, 18));
-		mainPanel.add(topRightLabel, gridBagConstraints);
-		//add grid panel
+		mainPanel.add(topRightPanel, gridBagConstraints);
+		topRightPanel.add(topRightLabel);
+		topRightPanel.add(tf);
+		
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 1;
 		gridBagConstraints.gridwidth = 2;
@@ -161,12 +166,10 @@ public class GUI {
 		gridBagConstraints.anchor = GridBagConstraints.NORTH;
 		mainPanel.add(gridPanel, gridBagConstraints); 
 		
-		//set these gridBagConstraints for all bottom buttons
 		gridBagConstraints.anchor = GridBagConstraints.SOUTH;
 		gridBagConstraints.weighty = 0.1;
 		
-		//add "generate examples" button to main panel
-		JButton exampleButton = new JButton("Generate Example");
+	  JButton exampleButton = new JButton("Generate Example");
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 2;
 		gridBagConstraints.gridwidth = 1;
@@ -177,16 +180,20 @@ public class GUI {
 		exampleButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				
-				
+                    startTime = System.currentTimeMillis();
+                    timer.start();
+                    
+                
+               
+                	
+          
 				ExamplePuzzles example = new ExamplePuzzles();
 				sudokuTable = example.createExamplePuzzle();
 				clearGrid();
-				//timer.start();
 				sudokuTableToGUI();
 			}
 		});
 		
-		//add "clear" button to main panel
 		JButton clearButton = new JButton("Clear Table");
 		gridBagConstraints.gridx = 1;
 		gridBagConstraints.gridy = 2;
@@ -200,7 +207,6 @@ public class GUI {
 			}
 		});
 		
-		//add "solve" button to bottom of main panel
 		JButton solveButton = new JButton("Solve");
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 3;
@@ -208,29 +214,30 @@ public class GUI {
 		mainPanel.add(solveButton, gridBagConstraints);
 		solveButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
+				updateClock();
+				timer.stop();
 				if (!checkText())
 					JOptionPane.showMessageDialog(frame,"Invalid input. Values must be integers from 1 to 9","Error",JOptionPane.ERROR_MESSAGE);
 				else {
 					GUIToSudokuTable();
-					if (!sudokuTable.solve(1))
+					if (!sudokuTable.solve(1)) {
 						JOptionPane.showMessageDialog(frame,"This puzzle cannot be solved.","Error",JOptionPane.ERROR_MESSAGE);
+						timer.start();
+					}
 					else
 						sudokuTableToGUI();
 				}
 			}
 		});
 		
-		
-		//create frame and add main panel
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(500,500);
-		frame.getContentPane().add(mainPanel); //add main panel to frame
+		frame.getContentPane().add(mainPanel);
 		frame.setLocationRelativeTo(null);
 		frame.setMinimumSize(new Dimension(300,300));
 		frame.setVisible(true);
 	}
 	
-	/* Nested class for the grid panel used in the GUI */
 	public class GridPanel extends JPanel{
 		private static final long serialVersionUID = -6157041650150998205L;
 
@@ -238,7 +245,6 @@ public class GUI {
 			super(layout);
 		}
 		
-		//draw lines for 3x3 quardrants
 		public void paintComponent(Graphics g){
 			g.fillRect(getWidth()/3 - 1,0,3,getHeight());
 			g.fillRect(2*getWidth()/3 - 1,0,3,getHeight());
@@ -246,5 +252,15 @@ public class GUI {
 			g.fillRect(0,2*getHeight()/3 - 2,getWidth(),3);
 		}
 	}
+	private void updateClock() {
+        Date elapsed = new Date(System.currentTimeMillis() - startTime);
+        tf.setText(date.format(elapsed));
+    }
+	private class ClockListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            updateClock();
+        }
+    }
 	
 }
