@@ -1,16 +1,7 @@
 package me.tacchino.sudoku;
 import java.util.ArrayList;
 
-/* Class representing a sudoku table
- * 
- * Author: Matt Tacchino
- *
- * A sudoku table is a 9x9 matrix, containing 81
- * sudoku digits.
- * 
- * Also contains method for solving the table
- * 
- */
+
 public class SudokuTable {
 	
 	private SudokuDigit[][] table = new SudokuDigit[9][9];

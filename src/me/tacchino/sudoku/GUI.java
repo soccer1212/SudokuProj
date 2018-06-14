@@ -113,19 +113,45 @@ public class GUI {
 		gridBagConstraints.anchor = GridBagConstraints.NORTH;
 		
 		//add label to top of main panel
-		JLabel topLabel = new JLabel("Sudoku Solver", JLabel.CENTER);
-		topLabel.setOpaque(true);
-		topLabel.setBackground(Color.BLACK);
-		topLabel.setForeground(Color.WHITE);
-		topLabel.setFont(new Font("Helvetica", Font.PLAIN, 18));
-		gridBagConstraints.gridx = 0;
+		/*JLabel topLeftLabel = new JLabel("Score", JLabel.CENTER);
+		
+		topLeftLabel.setOpaque(true);
+		topLeftLabel.setBackground(Color.BLACK);
+		topLeftLabel.setForeground(Color.WHITE);
+		topLeftLabel.setFont(new Font("Helvetica", Font.PLAIN, 18));
+		
+		gridBagConstraints.gridx = 1;
 		gridBagConstraints.gridy = 0;
-		gridBagConstraints.gridwidth = 2;
+		gridBagConstraints.gridwidth = 1;
 		gridBagConstraints.weighty = 0.05;
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
-		mainPanel.add(topLabel, gridBagConstraints);
+		mainPanel.add(topLeftLabel, gridBagConstraints);*/
 		
+		JLabel topCenterLabel = new JLabel("Sudoku", JLabel.CENTER);
 		
+		topCenterLabel.setOpaque(true);
+		topCenterLabel.setBackground(Color.BLUE);
+		topCenterLabel.setForeground(Color.WHITE);
+		topCenterLabel.setFont(new Font("Helvetica", Font.PLAIN, 18));
+		
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.gridwidth = 1;
+		gridBagConstraints.weighty = 0.05;
+		gridBagConstraints.fill = GridBagConstraints.BOTH;
+		mainPanel.add(topCenterLabel, gridBagConstraints);
+		
+		JLabel topRightLabel = new JLabel("Timer", JLabel.CENTER);
+		gridBagConstraints.gridx = 1;
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.gridwidth = 1;
+		gridBagConstraints.weighty = 0.05;
+		gridBagConstraints.fill = GridBagConstraints.BOTH;
+		topRightLabel.setOpaque(true);
+		topRightLabel.setBackground(Color.RED);
+		topRightLabel.setForeground(Color.WHITE);
+		topRightLabel.setFont(new Font("Helvetica", Font.PLAIN, 18));
+		mainPanel.add(topRightLabel, gridBagConstraints);
 		//add grid panel
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 1;
@@ -147,11 +173,15 @@ public class GUI {
 		gridBagConstraints.anchor = GridBagConstraints.SOUTH;
 		gridBagConstraints.ipadx = 40;
 		mainPanel.add(exampleButton, gridBagConstraints);
+		
 		exampleButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
+				
+				
 				ExamplePuzzles example = new ExamplePuzzles();
 				sudokuTable = example.createExamplePuzzle();
 				clearGrid();
+				//timer.start();
 				sudokuTableToGUI();
 			}
 		});
@@ -193,7 +223,7 @@ public class GUI {
 		
 		//create frame and add main panel
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(300,300);
+		frame.setSize(500,500);
 		frame.getContentPane().add(mainPanel); //add main panel to frame
 		frame.setLocationRelativeTo(null);
 		frame.setMinimumSize(new Dimension(300,300));
